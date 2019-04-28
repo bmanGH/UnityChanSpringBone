@@ -51,6 +51,11 @@ namespace UTJ
         public static Color DefaultGroundCollisionColor { get { return Color.green; } }
 #endif
 
+        public void RefreshForceProviders()
+        {
+            forceProviders = GameObjectUtil.FindComponentsOfType<ForceProvider>().ToArray();
+        }
+
         // Removes any nulls from bone colliders
         public void CleanUpBoneColliders()
         {
@@ -150,7 +155,7 @@ namespace UTJ
             for (var providerIndex = 0; providerIndex < providerCount; ++providerIndex)
             {
                 var forceProvider = forceProviders[providerIndex];
-                if (forceProvider.isActiveAndEnabled)
+                if (forceProvider != null && forceProvider.isActiveAndEnabled)
                 {
                     sumOfForces += forceProvider.GetForceOnBone(springBone);
                 }
@@ -176,7 +181,7 @@ namespace UTJ
         {
             // Must get the ForceProviders in Start and not Awake or Unity will complain that
             // "the scene is not loaded"
-            forceProviders = GameObjectUtil.FindComponentsOfType<ForceProvider>().ToArray();
+            RefreshForceProviders();
         }
 
         private void LateUpdate()
