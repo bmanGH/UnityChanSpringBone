@@ -117,16 +117,38 @@ namespace UTJ
                 (1f / simulationFrameRate) :
                 Time.deltaTime;
 
+            int lodIndex = -1;
+            float resetSmoothDrag = 0f;
+            if (lodGroup != null && lodEnabled)
+            {
+                lodIndex = GetVisibleLOD(lodGroup, lodCamera);
+                resetSmoothDrag = timeStep * lodResetSmoothDrag;
+            }
+            
             for (var boneIndex = 0; boneIndex < boneCount; boneIndex++)
             {
                 var springBone = springBones[boneIndex];
                 if (springBone.enabled)
                 {
-                    var sumOfForces = GetSumOfForcesOnBone(springBone);
-                    springBone.UpdateSpring(timeStep, sumOfForces);
-                    springBone.SatisfyConstraintsAndComputeRotation(
-                        timeStep, boneIsAnimatedStates[boneIndex] ? dynamicRatio : 1f);
-                }
+                    if (lodIndex <= springBone.lodLevel)
+                    {
+                        var sumOfForces = GetSumOfForcesOnBone(springBone);
+                        springBone.UpdateSpring(timeStep, sumOfForces);
+                        springBone.SatisfyConstraintsAndComputeRotation(
+                            timeStep, boneIsAnimatedStates[boneIndex] ? dynamicRatio : 1f);
+                    }
+                    else
+                    {
+                        if (springBone.lodMode == SpringBone.LODMode.Reset)
+                        {
+                            springBone.ResetRotation(resetSmoothDrag);
+                        }
+                        //else if(springBone.lodMode == SpringBone.LODMode.Ignore)
+                        //{
+                        //    // Pass
+                        //} 
+                    } // if (lodIndex < springBone.lodLevel)
+                } // if (springBone.enabled)
             }
         }
 
@@ -182,12 +204,89 @@ namespace UTJ
             // Must get the ForceProviders in Start and not Awake or Unity will complain that
             // "the scene is not loaded"
             RefreshForceProviders();
+
+            LODInitialize();
         }
 
         private void LateUpdate()
         {
             if (automaticUpdates) { UpdateDynamics(); }
         }
+
+        #region - LOD Support
+        [Header("LOD Support")]
+        public LODGroup lodGroup;
+        public Camera lodCamera;
+        public bool lodEnabled;
+        public float lodResetSmoothDrag = 5f;
+
+        protected LOD[] _lods;
+
+        protected void LODInitialize ()
+        {
+            if (lodGroup != null)
+            {
+                _lods = lodGroup.GetLODs();
+
+                if (lodCamera == null)
+                    lodCamera = Camera.main;
+            }
+        }
+
+        protected int GetVisibleLOD (LODGroup lodGroup, Camera camera = null)
+        {
+            var relativeHeight = GetRelativeHeight(lodGroup, camera ?? Camera.current);
+
+            int lodIndex = GetMaxLOD(lodGroup);
+            for (var i = 0; i < _lods.Length; i++)
+            {
+                var lod = _lods[i];
+
+                if (relativeHeight >= lod.screenRelativeTransitionHeight)
+                {
+                    lodIndex = i;
+                    break;
+                }
+            }
+            
+            return lodIndex;
+        }
+
+        protected float GetRelativeHeight (LODGroup lodGroup, Camera camera)
+        {
+            var distance = (lodGroup.transform.TransformPoint(lodGroup.localReferencePoint) - camera.transform.position).magnitude;
+            return DistanceToRelativeHeight(camera, (distance / QualitySettings.lodBias), GetWorldSpaceSize(lodGroup));
+        }
+
+        protected float DistanceToRelativeHeight (Camera camera, float distance, float size)
+        {
+            if (camera.orthographic)
+                return size * 0.5F / camera.orthographicSize;
+
+            var halfAngle = Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView * 0.5F);
+            var relativeHeight = size * 0.5F / (distance * halfAngle);
+            return relativeHeight;
+        }
+
+        protected int GetMaxLOD (LODGroup lodGroup)
+        {
+            return lodGroup.lodCount - 1;
+        }
+
+        protected float GetWorldSpaceSize (LODGroup lodGroup)
+        {
+            return GetWorldSpaceScale (lodGroup.transform) * lodGroup.size;
+        }
+
+        protected float GetWorldSpaceScale (Transform t)
+        {
+            var scale = t.lossyScale;
+            float largestAxis = Mathf.Abs(scale.x);
+            largestAxis = Mathf.Max(largestAxis, Mathf.Abs(scale.y));
+            largestAxis = Mathf.Max(largestAxis, Mathf.Abs(scale.z));
+            return largestAxis;
+        }
+        #endregion
 
 #if UNITY_EDITOR
         private Vector3[] groundPoints;

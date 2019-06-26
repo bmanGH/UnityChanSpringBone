@@ -71,6 +71,8 @@ namespace UTJ
                 yAngleLimits = AngleLimitsToSerializer(sourceBone.yAngleLimits),
                 zAngleLimits = AngleLimitsToSerializer(sourceBone.zAngleLimits),
                 angularStiffness = sourceBone.angularStiffness,
+                lodLevel = sourceBone.lodLevel,
+                lodMode = (int)sourceBone.lodMode,
                 lengthLimits = sourceBone.lengthLimitTargets
                     .Where(item => item != null)
                     .Select(item => new LengthLimitSerializer
@@ -78,7 +80,7 @@ namespace UTJ
                         objectName = item.name,
                         ratio = 1.01f
                     })
-                    .ToArray()
+                    .ToArray(),
             };
         }
 
@@ -113,10 +115,12 @@ namespace UTJ
                 "z angle min",
                 "z angle max",
                 "angle stiffness",
+                "lod level",
+                "lod mode",
                 "length limit count",
                 "length limit target",
                 "length limit ratio x N",
-                "collider x N"
+                "collider x N",
             };
 
             builder.AppendLine();

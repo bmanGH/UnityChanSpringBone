@@ -13,6 +13,12 @@ namespace UTJ
             TailCollision
         }
 
+        public enum LODMode
+        {
+            Reset,
+            Ignore,
+        }
+
         // Forces
         [Range(0f, 5000f)]
         public float stiffnessForce = 0.01f;
@@ -37,6 +43,11 @@ namespace UTJ
         public SpringSphereCollider[] sphereColliders;
         public SpringCapsuleCollider[] capsuleColliders;
         public SpringPanelCollider[] panelColliders;
+
+        // LOD Support
+        [Range(0, 10)]
+        public int lodLevel = 10;
+        public LODMode lodMode;
 
         public Vector3 CurrentTipPosition { get { return currTipPos; } }
 
@@ -71,7 +82,8 @@ namespace UTJ
             if (childCount == 0)
             {
                 // This should never happen
-                Debug.LogWarning("SpringBone「" + name + "」に有効な子供がありません");
+                if (!Application.isPlaying)
+                    Debug.LogWarning("SpringBone「" + name + "」に有効な子供がありません");
                 return transform.position + transform.right * -0.1f;
             }
 
@@ -196,6 +208,20 @@ namespace UTJ
             transform.localRotation = Quaternion.Lerp(skinAnimationLocalRotation, actualLocalRotation, dynamicRatio);
         }
 
+        public void ResetRotation(float resetSmoothDrag)
+        {
+            actualLocalRotation = Quaternion.Lerp(actualLocalRotation, initialLocalRotation, resetSmoothDrag);
+            transform.localRotation = actualLocalRotation;
+        }
+
+        public void SmoothResetRotation(float timeStep, float dynamicRatio)
+        {
+            _smoothResetTimer += timeStep;
+
+            actualLocalRotation =  ComputeRotation(currTipPos);
+            transform.localRotation = Quaternion.Lerp(skinAnimationLocalRotation, actualLocalRotation, dynamicRatio);
+        }
+
         public Transform GetPivotTransform()
         {
             if (pivotNode == null)
@@ -216,6 +242,7 @@ namespace UTJ
         private Vector3 currTipPos;
         private Vector3 prevTipPos;
         private float[] lengthsToLimitTargets;
+        private float _smoothResetTimer;
 
         private static IList<Transform> GetValidChildren(Transform parent)
         {

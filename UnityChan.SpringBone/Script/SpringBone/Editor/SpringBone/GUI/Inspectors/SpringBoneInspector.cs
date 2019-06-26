@@ -254,11 +254,17 @@ namespace UTJ
                 new PropertyInfo("panelColliders", "板")
             };
 
+            var lodSupportProperties = new PropertyInfo[] {
+                new PropertyInfo("lodLevel", "LOD Level"),
+                new PropertyInfo("lodMode", "LOD Mode")
+            };
+
             propertySets = new PropertySet[] {
                 new PropertySet("力", forceProperties), 
                 new PropertySet("角度制限", angleLimitProperties),
                 new PropertySet("距離制限", lengthLimitProperties),
                 new PropertySet("当たり判定", collisionProperties),
+                new PropertySet("LOD Support", lodSupportProperties),
             };
 
             foreach (var set in propertySets)

@@ -253,6 +253,8 @@ namespace UTJ
             public AngleLimitSerializer yAngleLimits;
             public AngleLimitSerializer zAngleLimits;
             public float angularStiffness;
+            public int lodLevel;
+            public int lodMode;
             public LengthLimitSerializer[] lengthLimits;
         }
 
@@ -505,6 +507,8 @@ namespace UTJ
             springBone.yAngleLimits = BuildAngleLimitsFromSerializer(baseData.yAngleLimits);
             springBone.zAngleLimits = BuildAngleLimitsFromSerializer(baseData.zAngleLimits);
             springBone.radius = baseData.radius;
+            springBone.lodLevel = baseData.lodLevel;
+            springBone.lodMode = (SpringBone.LODMode)baseData.lodMode;
 
             // Pivot node
             var pivotNodeName = baseData.pivotName;
