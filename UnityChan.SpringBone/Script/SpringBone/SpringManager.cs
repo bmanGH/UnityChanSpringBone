@@ -31,6 +31,14 @@ namespace UTJ
         [Header("Bones")]
         public SpringBone[] springBones;
 
+        [Header("Private ForceProviders")]
+        public List<ForceProvider> privateForceProviders;
+
+        [Header("External Colliders")]
+        public List<SpringSphereCollider> externalSphereColliders;
+        public List<SpringCapsuleCollider> externalCapsuleColliders;
+        public List<SpringPanelCollider> externalPanelColliders;
+
 #if UNITY_EDITOR
         [Header("Gizmos")]
         public Color boneColor = Color.yellow;
@@ -53,7 +61,18 @@ namespace UTJ
 
         public void RefreshForceProviders()
         {
-            forceProviders = GameObjectUtil.FindComponentsOfType<ForceProvider>().ToArray();
+            var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var rootObjects = activeScene.GetRootGameObjects();
+            var matchingProviders = new List<ForceProvider>();
+            foreach (var rootObject in rootObjects)
+            {
+                foreach (var forceProvider in rootObject.GetComponentsInChildren<ForceProvider>(true))
+                {
+                    if (forceProvider.isPrivate)
+                        matchingProviders.Add(forceProvider);
+                }
+            }
+            forceProviders = matchingProviders.ToArray();
         }
 
         // Removes any nulls from bone colliders
@@ -119,7 +138,7 @@ namespace UTJ
 
             int lodIndex = -1;
             float resetSmoothDrag = 0f;
-            if (lodGroup != null && lodEnabled)
+            if (lodGroup != null && lodGroup.enabled && lodEnabled)
             {
                 lodIndex = GetVisibleLOD(lodGroup, lodCamera);
                 resetSmoothDrag = timeStep * lodResetSmoothDrag;
@@ -173,6 +192,7 @@ namespace UTJ
         private Vector3 GetSumOfForcesOnBone(SpringBone springBone)
         {
             var sumOfForces = gravity;
+
             var providerCount = forceProviders.Length;
             for (var providerIndex = 0; providerIndex < providerCount; ++providerIndex)
             {
@@ -182,12 +202,23 @@ namespace UTJ
                     sumOfForces += forceProvider.GetForceOnBone(springBone);
                 }
             }
+
+            providerCount = privateForceProviders.Count;
+            for (var providerIndex = 0; providerIndex < providerCount; ++providerIndex)
+            {
+                var forceProvider = privateForceProviders[providerIndex];
+                if (forceProvider != null && forceProvider.isActiveAndEnabled)
+                {
+                    sumOfForces += forceProvider.GetForceOnBone(springBone);
+                }
+            }
+
             return sumOfForces;
         }
 
         private void Awake()
         {
-            FindSpringBones(true);
+            //FindSpringBones(true);
             var boneCount = springBones.Length;
             for (int boneIndex = 0; boneIndex < boneCount; boneIndex++)
             {

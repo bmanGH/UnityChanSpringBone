@@ -5,7 +5,7 @@ namespace UTJ
     public class WindVolume : ForceProvider
     {
         [Range(0f, 1f)]
-        public float weight = 0f;
+        public float weight = 1f;
         public float strength = 100f;
         public float amplitude = 1f;
         public float period = 1.5f;

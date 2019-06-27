@@ -4,18 +4,20 @@ namespace UTJ
 {
     public class ForceVolume : ForceProvider 
     {
-        public float strength = 0.01f;
+        [Range(0f, 1f)]
+        public float weight = 0f;
+        public float strength = 100f;
 
         public override Vector3 GetForceOnBone(SpringBone springBone)
         {
-            return strength * transform.forward;
+            return weight * strength * transform.forward;
         }
 
         // private
 
         private void OnDrawGizmos()
         {
-            const float DrawScale = 10f;
+            const float DrawScale = 0.05f;
             var origin = transform.position;
             var destination = origin + strength * DrawScale * transform.forward;
             GizmoUtil.DrawArrow(origin, destination, Color.gray, 0.1f);

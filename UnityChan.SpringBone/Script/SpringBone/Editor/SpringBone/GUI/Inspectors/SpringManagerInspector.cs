@@ -37,7 +37,8 @@ namespace UTJ
                     actionButtons = new[] {
                         new SpringManagerButton("窓を表示", ShowSpringWindow),
                         new SpringManagerButton("SpringBoneを全て選択", SelectAllBones),
-                        new SpringManagerButton("SpringBoneリストを更新", UpdateBoneList)
+                        new SpringManagerButton("SpringBoneリストを更新", UpdateBoneList),
+                        new SpringManagerButton("Private ForceProviderを更新", UpdatePrivateForceProviderList),
                     };
                 }
 
@@ -73,7 +74,15 @@ namespace UTJ
 
         private static void UpdateBoneList(SpringManager manager)
         {
+            Undo.RecordObject(manager, "SpringBoneリストを更新");
             SpringBoneSetup.FindAndAssignSpringBones(manager, true);
+        }
+
+        private static void UpdatePrivateForceProviderList(SpringManager manager)
+        {
+            Undo.RecordObject(manager, "Private ForceProviderを更新");
+            manager.privateForceProviders.Clear();
+            manager.privateForceProviders.AddRange(manager.transform.GetComponentsInChildren<ForceProvider>(true));
         }
     }
 }

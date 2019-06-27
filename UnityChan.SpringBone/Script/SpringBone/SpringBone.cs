@@ -214,14 +214,6 @@ namespace UTJ
             transform.localRotation = actualLocalRotation;
         }
 
-        public void SmoothResetRotation(float timeStep, float dynamicRatio)
-        {
-            _smoothResetTimer += timeStep;
-
-            actualLocalRotation =  ComputeRotation(currTipPos);
-            transform.localRotation = Quaternion.Lerp(skinAnimationLocalRotation, actualLocalRotation, dynamicRatio);
-        }
-
         public Transform GetPivotTransform()
         {
             if (pivotNode == null)
@@ -296,6 +288,7 @@ namespace UTJ
 
             var hadCollision = false;
 
+            // Capsule Collision
             for (int i = 0; i < capsuleColliders.Length; ++i)
             {
                 var collider = capsuleColliders[i];
@@ -306,7 +299,18 @@ namespace UTJ
                     hadCollision |= currentCollisionStatus != CollisionStatus.NoCollision;
                 }
             }
+            for (int i = 0; i < manager.externalCapsuleColliders.Count; ++i)
+            {
+                var collider = manager.externalCapsuleColliders[i];
+                if (collider.enabled)
+                {
+                    var currentCollisionStatus = collider.CheckForCollisionAndReact(
+                        headPosition, ref currTipPos, scaledRadius, ref hitNormal);
+                    hadCollision |= currentCollisionStatus != CollisionStatus.NoCollision;
+                }
+            }
 
+            // Sphere Collision
             for (int i = 0; i < sphereColliders.Length; ++i)
             {
                 var collider = sphereColliders[i];
@@ -317,11 +321,31 @@ namespace UTJ
                     hadCollision |= currentCollisionStatus != CollisionStatus.NoCollision;
                 }
             }
-
-            var colliderCount = panelColliders.Length;
-            for (int colliderIndex = 0; colliderIndex < colliderCount; colliderIndex++)
+            for (int i = 0; i < manager.externalSphereColliders.Count; ++i)
             {
-                var collider = panelColliders[colliderIndex];
+                var collider = manager.externalSphereColliders[i];
+                if (collider.enabled)
+                {
+                    var currentCollisionStatus = collider.CheckForCollisionAndReact(
+                        headPosition, ref currTipPos, scaledRadius, ref hitNormal);
+                    hadCollision |= currentCollisionStatus != CollisionStatus.NoCollision;
+                }
+            }
+
+            // Panel Collision
+            for (int i = 0; i < panelColliders.Length; i++)
+            {
+                var collider = panelColliders[i];
+                if (collider.enabled)
+                {
+                    var currentCollisionStatus = collider.CheckForCollisionAndReact(
+                        headPosition, springLength, ref currTipPos, scaledRadius, ref hitNormal);
+                    hadCollision |= currentCollisionStatus != CollisionStatus.NoCollision;
+                }
+            }
+            for (int i = 0; i < manager.externalPanelColliders.Count; i++)
+            {
+                var collider = manager.externalPanelColliders[i];
                 if (collider.enabled)
                 {
                     var currentCollisionStatus = collider.CheckForCollisionAndReact(
