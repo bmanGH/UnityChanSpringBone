@@ -255,6 +255,9 @@ namespace UTJ
             public float angularStiffness;
             public int lodLevel;
             public int lodMode;
+            public float lengthLimitStiffness;
+            public bool isLengthLimitPercentage;
+            public int lengthLimitMode;
             public LengthLimitSerializer[] lengthLimits;
         }
 
@@ -509,6 +512,9 @@ namespace UTJ
             springBone.radius = baseData.radius;
             springBone.lodLevel = baseData.lodLevel;
             springBone.lodMode = (SpringBone.LODMode)baseData.lodMode;
+            springBone.lengthLimitStiffness = baseData.lengthLimitStiffness;
+            springBone.isLengthLimitPercentage = baseData.isLengthLimitPercentage;
+            springBone.lengthLimitMode = (SpringBone.LengthLimitMode)baseData.lengthLimitMode;
 
             // Pivot node
             var pivotNodeName = baseData.pivotName;

@@ -318,6 +318,12 @@ namespace UTJ
                 bone.DrawAngleLimits(bone.zAngleLimits, angleLimitDrawScale);
             }
 
+            for (int boneIndex = 0; boneIndex < boneCount; boneIndex++)
+            {
+                var bone = bonesToDraw[boneIndex];
+                bone.DrawLinesToLimitTargets();
+            }
+
             var linePointCount = boneCount * 2;
             if (boneLines == null || boneLines.Length != linePointCount)
             {

@@ -73,6 +73,9 @@ namespace UTJ
                 angularStiffness = sourceBone.angularStiffness,
                 lodLevel = sourceBone.lodLevel,
                 lodMode = (int)sourceBone.lodMode,
+                lengthLimitStiffness = sourceBone.lengthLimitStiffness,
+                isLengthLimitPercentage = sourceBone.isLengthLimitPercentage,
+                lengthLimitMode = (int)sourceBone.lengthLimitMode,
                 lengthLimits = sourceBone.lengthLimitTargets
                     .Where(item => item != null)
                     .Select(item => new LengthLimitSerializer
@@ -117,6 +120,9 @@ namespace UTJ
                 "angle stiffness",
                 "lod level",
                 "lod mode",
+                "length limit stiffness",
+                "is length limit percentage",
+                "length limit mode",
                 "length limit count",
                 "length limit target",
                 "length limit ratio x N",

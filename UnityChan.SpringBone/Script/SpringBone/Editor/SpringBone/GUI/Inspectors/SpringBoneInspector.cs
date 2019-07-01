@@ -244,6 +244,9 @@ namespace UTJ
             };
 
             var lengthLimitProperties = new PropertyInfo[] {
+                new PropertyInfo("lengthLimitStiffness", "距離制限の硬さ"),
+                new PropertyInfo("isLengthLimitPercentage", "距離制限の割合"),
+                new PropertyInfo("lengthLimitMode", "距離制限のモード"),
                 new PropertyInfo("lengthLimitTargets", "ターゲット")
             };
 

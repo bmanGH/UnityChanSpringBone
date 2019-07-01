@@ -13,6 +13,13 @@ namespace UTJ
             TailCollision
         }
 
+        public enum LengthLimitMode
+        {
+            Both,
+            Pull,
+            Push,
+        }
+
         public enum LODMode
         {
             Reset,
@@ -35,6 +42,9 @@ namespace UTJ
         public AngleLimits zAngleLimits = new AngleLimits();
 
         // Length limits
+        public float lengthLimitStiffness = 0.5f;
+        public bool isLengthLimitPercentage;
+        public LengthLimitMode lengthLimitMode;
         public Transform[] lengthLimitTargets;
 
         // Collision
@@ -460,8 +470,7 @@ namespace UTJ
                 return currTipPos;
             }
 
-            const float SpringConstant = 0.5f;
-            var accelerationMultiplier = SpringConstant * deltaTime * deltaTime;
+            var accelerationMultiplier = isLengthLimitPercentage ? lengthLimitStiffness : lengthLimitStiffness * deltaTime * deltaTime;
             var movement = new Vector3(0f, 0f, 0f);
             for (int targetIndex = 0; targetIndex < targetCount; targetIndex++)
             {
@@ -472,8 +481,31 @@ namespace UTJ
 
                 // Hooke's Law
                 var currentDistance = Mathf.Sqrt(currentDistanceSquared);
-                var distanceFromEquilibrium = currentDistance - lengthToLimitTarget;
-                movement -= accelerationMultiplier * distanceFromEquilibrium * currentToTarget.normalized;
+                switch (lengthLimitMode)
+                {
+                    case LengthLimitMode.Both:
+                        {
+                            var distanceFromEquilibrium = currentDistance - lengthToLimitTarget;
+                            movement -= accelerationMultiplier * distanceFromEquilibrium * currentToTarget.normalized;
+                            break;
+                        }
+                    case LengthLimitMode.Pull:
+                        {
+                            if (currentDistance > lengthToLimitTarget)
+                            {
+                                float distanceFromEquilibrium = currentDistance - lengthToLimitTarget;
+                                movement -= accelerationMultiplier * distanceFromEquilibrium * currentToTarget.normalized;
+                            }
+                            break;
+                        }
+                    case LengthLimitMode.Push:
+                        if (currentDistance < lengthToLimitTarget)
+                        {
+                            var distanceFromEquilibrium = currentDistance - lengthToLimitTarget;
+                            movement -= accelerationMultiplier * distanceFromEquilibrium * currentToTarget.normalized;
+                        }
+                        break;
+                }
             }
 
             return currTipPos + movement;
@@ -529,7 +561,7 @@ namespace UTJ
             }
         }
 
-        private void DrawLinesToLimitTargets()
+        public void DrawLinesToLimitTargets()
         {
             if (lengthLimitTargets == null
                 || lengthsToLimitTargets == null
