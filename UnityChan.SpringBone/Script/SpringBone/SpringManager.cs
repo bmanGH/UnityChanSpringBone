@@ -71,7 +71,7 @@ namespace UTJ
             {
                 foreach (var forceProvider in rootObject.GetComponentsInChildren<ForceProvider>(true))
                 {
-                    if (forceProvider.isPrivate)
+                    if (!forceProvider.isPrivate)
                         matchingProviders.Add(forceProvider);
                 }
             }
