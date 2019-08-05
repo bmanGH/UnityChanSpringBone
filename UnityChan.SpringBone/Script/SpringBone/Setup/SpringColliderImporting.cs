@@ -123,7 +123,7 @@ namespace UTJ
             T component = default(T);
             if (name.Length > 0)
             {
-                component = GameObjectUtil.FindChildComponentByName<T>(
+                component = GameObjectExtensions.GameObjectUtil.FindChildComponentByName<T>(
                     gameObject.transform.root.gameObject, name);
             }
             return component;

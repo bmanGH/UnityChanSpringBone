@@ -19,7 +19,7 @@ namespace UTJ
             var newObjects = new List<GameObject>(Selection.gameObjects.Length);
             foreach (var parent in Selection.gameObjects)
             {
-                var childName = GameObjectUtil.GetUniqueName(parent.name + suffix);
+                var childName = GameObjectExtensions.GameObjectUtil.GetUniqueName(parent.name + suffix);
                 var newChild = CreateChildObject(childName, parent.transform);
                 newChild.AddComponent<T>();
                 newObjects.Add(newChild);
@@ -133,7 +133,7 @@ namespace UTJ
             }
 
             var charaBones = Selection.gameObjects
-                .SelectMany(gameObject => GameObjectUtil.GetAllBones(gameObject.transform.root.gameObject))
+                .SelectMany(gameObject => GameObjectExtensions.GameObjectUtil.GetAllBones(gameObject.transform.root.gameObject))
                 .Distinct();
 
             var colliderTypes = SpringColliderSetup.GetColliderTypes();
@@ -154,7 +154,7 @@ namespace UTJ
                     && gameObject.transform.childCount == 0)
                 .ToArray();
 
-            var springBones = GameObjectUtil.FindComponentsOfType<SpringBone>();
+            var springBones = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringBone>();
             var undoObjects = new List<Object>(springBones.Select(item => (Object)item));
             undoObjects.AddRange(deadColliders.Select(item => (Object)item));
             undoObjects.AddRange(probablyDeadGameObjects.Select(item => (Object)item));
@@ -186,7 +186,7 @@ namespace UTJ
                 return;
             }
 
-            var springManagers = GameObjectUtil.FindComponentsOfType<SpringManager>();
+            var springManagers = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringManager>();
             if (!springManagers.Any()) { return; }
 
             var queryMessage = "本当にダイナミクスのクリーンナップを行いますか？";
@@ -196,11 +196,11 @@ namespace UTJ
                 RemoveDuplicateComponents<DynamicsNull>();
                 RemoveDuplicateComponents<SpringManager>();
 
-                springManagers = GameObjectUtil.FindComponentsOfType<SpringManager>();
+                springManagers = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringManager>();
                 foreach (var springManager in springManagers)
                 {
                     var springBones = springManager.GetComponentsInChildren<SpringBone>(true);
-                    var allBones = GameObjectUtil.GetAllBones(springManager.gameObject);
+                    var allBones = GameObjectExtensions.GameObjectUtil.GetAllBones(springManager.gameObject);
 
                     var maybeUnusedGameObjects = new HashSet<GameObject>();
 
@@ -261,7 +261,7 @@ namespace UTJ
         private static void RemoveDuplicateComponents<T>() where T : Component
         {
             // Delete all components of the same type after the first
-            var duplicateObjects = GameObjectUtil.FindComponentsOfType<Transform>()
+            var duplicateObjects = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<Transform>()
                 .Where(item => item.GetComponents<T>().Length > 1);
             if (duplicateObjects.Any())
             {

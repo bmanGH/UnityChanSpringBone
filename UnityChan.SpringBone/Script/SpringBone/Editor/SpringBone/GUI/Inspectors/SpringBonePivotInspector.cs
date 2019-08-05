@@ -53,7 +53,7 @@ namespace UTJ
                 .Select(target => ((Component)target).transform)
                 .ToArray();
 
-            bones = GameObjectUtil.FindComponentsOfType<SpringBone>()
+            bones = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringBone>()
                 .Where(bone => pivots.Contains(bone.pivotNode))
                 .ToArray();
         }

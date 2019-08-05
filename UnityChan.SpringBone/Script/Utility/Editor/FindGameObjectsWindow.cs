@@ -1,4 +1,4 @@
-using UTJ.GameObjectExtensions;
+﻿using UTJ.GameObjectExtensions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -21,7 +21,7 @@ namespace UTJ
             IEnumerable<string> ignorePatterns = null
         )
         {
-            var gameObjects = GameObjectUtil.GetAllGameObjects();
+            var gameObjects = GameObjectExtensions.GameObjectUtil.GetAllGameObjects();
             var matchingObjects = FindObjectsWithComponentByPattern(gameObjects, componentPattern);
             if (ignorePatterns != null)
             {
@@ -61,7 +61,7 @@ namespace UTJ
                         || additionalPatterns.Any(pattern => StringUtil.GlobMatch(name, pattern)));
             };
 
-            var matchingObjects = GameObjectUtil.GetAllGameObjects()
+            var matchingObjects = GameObjectExtensions.GameObjectUtil.GetAllGameObjects()
                 .Where(gameObject => isNameAMatch(gameObject.name));
 
             if (ignorePatterns != null)

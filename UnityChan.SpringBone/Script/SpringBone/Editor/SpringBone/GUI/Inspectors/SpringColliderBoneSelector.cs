@@ -103,7 +103,7 @@ namespace UTJ
                 .Where(component => component != null)
                 .ToArray();
 
-            var allSpringBones = GameObjectUtil.FindComponentsOfType<SpringBone>();
+            var allSpringBones = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringBone>();
             var matchingSpringBones = allSpringBones
                 .Where(springBone => containmentCheck(springBone, colliders))
                 .Distinct()
@@ -111,7 +111,7 @@ namespace UTJ
             System.Array.Sort(matchingSpringBones, (a, b) => string.Compare(a.name, b.name));
 
             // Now arrange by manager
-            var allManagers = GameObjectUtil.FindComponentsOfType<SpringManager>().ToArray();
+            var allManagers = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringManager>().ToArray();
             System.Array.Sort(allManagers, (a, b) => string.Compare(a.name, b.name));
             var boneGroups = new List<SpringManagerBoneGroup>();
             foreach (var manager in allManagers)

@@ -227,7 +227,7 @@ namespace UTJ
                 }
             }
 
-            var allSpringBones = GameObjectUtil.FindComponentsOfType<SpringBone>();
+            var allSpringBones = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringBone>();
             var selectedBones = allSpringBones.Where(boneMatches);
             var newBoneEntries = selectedBones
                 .Select(bone => new BoneEntry(bone, FindMirroredSpringBone(bone, mirrorAxis)))
@@ -259,7 +259,7 @@ namespace UTJ
                     && item.sourceBone != item.targetBone);
             var undoItems = mirrorItems.Select(item => (Component)item.targetBone).ToList();
 
-            var allSkinBones = GameObjectUtil.FindComponentsOfType<SkinnedMeshRenderer>()
+            var allSkinBones = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SkinnedMeshRenderer>()
                 .SelectMany(renderer => renderer.bones)
                 .Distinct()
                 .ToArray();

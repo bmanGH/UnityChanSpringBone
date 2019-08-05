@@ -96,7 +96,7 @@ namespace UTJ
                     FilterBoneRecordsByRequiredBonesAndCreateUnrecordedBones(springBoneRoot, requiredBones);
                 }
 
-                var initialTransforms = GameObjectUtil.BuildNameToComponentMap<Transform>(springBoneRoot, true);
+                var initialTransforms = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<Transform>(springBoneRoot, true);
                 foreach (var record in pivotRecords)
                 {
                     BuildPivotFromSerializer(initialTransforms, record);
@@ -133,7 +133,7 @@ namespace UTJ
 
                 var bonesWithoutRecords = requiredBones
                     .Except(recordedBoneNames)
-                    .Select(boneName => GameObjectUtil.FindChildByName(springBoneRoot, boneName))
+                    .Select(boneName => GameObjectExtensions.GameObjectUtil.FindChildByName(springBoneRoot, boneName))
                     .Where(item => item != null)
                     .Select(item => item.gameObject);
                 foreach (var bone in bonesWithoutRecords)
@@ -210,10 +210,10 @@ namespace UTJ
             {
                 return new SpringBoneSetupMaps
                 {
-                    allChildren = GameObjectUtil.BuildNameToComponentMap<Transform>(springBoneRoot, true),
-                    sphereColliders = GameObjectUtil.BuildNameToComponentMap<SpringSphereCollider>(colliderRoot, true),
-                    capsuleColliders = GameObjectUtil.BuildNameToComponentMap<SpringCapsuleCollider>(colliderRoot, true),
-                    panelColliders = GameObjectUtil.BuildNameToComponentMap<SpringPanelCollider>(colliderRoot, true),
+                    allChildren = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<Transform>(springBoneRoot, true),
+                    sphereColliders = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<SpringSphereCollider>(colliderRoot, true),
+                    capsuleColliders = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<SpringCapsuleCollider>(colliderRoot, true),
+                    panelColliders = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<SpringPanelCollider>(colliderRoot, true),
                 };
             }
         }
@@ -533,7 +533,7 @@ namespace UTJ
             }
             else
             {
-                var skinBones = GameObjectUtil.GetAllBones(springBone.transform.root.gameObject);
+                var skinBones = GameObjectExtensions.GameObjectUtil.GetAllBones(springBone.transform.root.gameObject);
                 if (pivotNode.GetComponent<SpringBonePivot>()
                     && SpringBoneSetup.IsPivotProbablySafeToDestroy(pivotNode, skinBones))
                 {

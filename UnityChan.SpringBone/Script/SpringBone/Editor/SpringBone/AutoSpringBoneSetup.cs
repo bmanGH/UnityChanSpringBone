@@ -123,7 +123,7 @@ namespace UTJ
             var designatedSpringBones = GetBonesDesignatedForDynamics(rootObject);
             var currentSpringBones = rootObject.GetComponentsInChildren<SpringBone>(true);
 
-            var skinBones = GameObjectUtil.GetAllBones(rootObject);
+            var skinBones = GameObjectExtensions.GameObjectUtil.GetAllBones(rootObject);
             var springBonesToDestroy = currentSpringBones
                 .Where(bone => !designatedSpringBones.Contains(bone.gameObject));
             foreach (var boneToDestroy in springBonesToDestroy)

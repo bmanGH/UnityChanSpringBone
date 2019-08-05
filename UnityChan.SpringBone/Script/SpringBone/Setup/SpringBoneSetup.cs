@@ -65,7 +65,7 @@ namespace UTJ
 
         public static Dictionary<Transform, List<SpringBone>> GetPivotToSpringBoneMap(GameObject rootObject)
         {
-            var skinBones = GameObjectUtil.GetAllBones(rootObject);
+            var skinBones = GameObjectExtensions.GameObjectUtil.GetAllBones(rootObject);
             var springBones = rootObject.GetComponentsInChildren<SpringBone>(true)
                 .Where(bone => bone.pivotNode != null && !skinBones.Contains(bone.pivotNode));
 
@@ -113,7 +113,7 @@ namespace UTJ
             var oldPivotNode = springBone.pivotNode;
             if (oldPivotNode != null)
             {
-                var skinBones = GameObjectUtil.GetAllBones(springBone.transform.root.gameObject);
+                var skinBones = GameObjectExtensions.GameObjectUtil.GetAllBones(springBone.transform.root.gameObject);
                 if (IsPivotProbablySafeToDestroy(oldPivotNode, skinBones))
                 {
                     DestroyUnityObject(oldPivotNode.gameObject);
@@ -172,7 +172,7 @@ namespace UTJ
             var pivots = from springBone in springBones
                          where springBone.pivotNode != null
                          select springBone.pivotNode;
-            var skinBones = GameObjectUtil.GetAllBones(rootObject);
+            var skinBones = GameObjectExtensions.GameObjectUtil.GetAllBones(rootObject);
 
             var maybeSafeToDestroyPivots = from pivot in pivots
                                            where IsPivotProbablySafeToDestroy(pivot, skinBones)
@@ -286,7 +286,7 @@ namespace UTJ
         private static List<SpringBone> GetSpringBonesSortedByDepth(GameObject rootObject, bool includeInactive)
         {
             var boneDepthList = rootObject.GetComponentsInChildren<SpringBone>(includeInactive)
-                .Select(bone => new { bone, depth = GameObjectUtil.GetTransformDepth(bone.transform) })
+                .Select(bone => new { bone, depth = GameObjectExtensions.GameObjectUtil.GetTransformDepth(bone.transform) })
                 .ToList();
             boneDepthList.Sort((a, b) => a.depth.CompareTo(b.depth));
             return boneDepthList.Select(item => item.bone).ToList();

@@ -1,4 +1,4 @@
-using UTJ.GameObjectExtensions;
+﻿using UTJ.GameObjectExtensions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -129,10 +129,10 @@ namespace UTJ
 
         public static void DeleteSelectedBones()
         {
-            var springBonesToDelete = GameObjectUtil.FindComponentsOfType<SpringBone>()
+            var springBonesToDelete = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringBone>()
                 .Where(bone => Selection.gameObjects.Contains(bone.gameObject))
                 .ToArray();
-            var springManagersToUpdate = GameObjectUtil.FindComponentsOfType<SpringManager>()
+            var springManagersToUpdate = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringManager>()
                 .Where(manager => manager.springBones.Any(bone => springBonesToDelete.Contains(bone)))
                 .ToArray();
             Undo.RecordObjects(springManagersToUpdate, "Delete selected bones");
@@ -160,7 +160,7 @@ namespace UTJ
                 .ToArray();
             if (!selectedSpringManagers.Any())
             {
-                selectedSpringManagers = GameObjectUtil.FindComponentsOfType<SpringManager>().ToArray();
+                selectedSpringManagers = GameObjectExtensions.GameObjectUtil.FindComponentsOfType<SpringManager>().ToArray();
             }
 
             if (selectedSpringManagers.Count() != 1)
