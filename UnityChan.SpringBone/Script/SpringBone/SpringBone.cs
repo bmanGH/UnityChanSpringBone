@@ -157,7 +157,7 @@ namespace UTJ
             currTipPos = headPosition + springLength * headToTail;
         }
 
-        public void SatisfyConstraintsAndComputeRotation(float deltaTime, float dynamicRatio)
+        public void SatisfyConstraintsAndComputeRotation(float deltaTime, float dynamicRatio, bool dynamicAdditiveMode)
         {
             if (manager.enableLengthLimits)
             {
@@ -197,10 +197,14 @@ namespace UTJ
             }
 
             actualLocalRotation = ComputeRotation(currTipPos);
+            if (dynamicAdditiveMode)
+            {
+                actualLocalRotation = skinAnimationLocalRotation * actualLocalRotation;
+            }
             transform.localRotation = Quaternion.Lerp(skinAnimationLocalRotation, actualLocalRotation, dynamicRatio);
         }
 
-        public void ComputeRotation(float dynamicRatio)
+        public void ComputeRotation(float dynamicRatio, bool dynamicAdditiveMode)
         {
             if (float.IsNaN(currTipPos.x)
                | float.IsNaN(currTipPos.y)
@@ -215,6 +219,10 @@ namespace UTJ
             }
 
             actualLocalRotation = ComputeRotation(currTipPos);
+            if (dynamicAdditiveMode)
+            {
+                actualLocalRotation = skinAnimationLocalRotation * actualLocalRotation;
+            }
             transform.localRotation = Quaternion.Lerp(skinAnimationLocalRotation, actualLocalRotation, dynamicRatio);
         }
 

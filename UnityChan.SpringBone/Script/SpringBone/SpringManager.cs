@@ -13,6 +13,7 @@ namespace UTJ
         public int simulationFrameRate = 60;
         [Range(0f, 1f)]
         public float dynamicRatio = 0.5f;
+        public bool dynamicAdditiveMode = false;
         public Vector3 gravity = new Vector3(0f, -10f, 0f);
         [Range(0f, 1f)]
         public float bounce = 0f;
@@ -129,13 +130,13 @@ namespace UTJ
                     var springBone = springBones[boneIndex];
                     if (springBone.enabled)
                     {
-                        springBone.ComputeRotation(boneIsAnimatedStates[boneIndex] ? dynamicRatio : 1f);
+                        springBone.ComputeRotation(boneIsAnimatedStates[boneIndex] ? dynamicRatio : 1f, dynamicAdditiveMode);
                     }
                 }
                 return;
             }
 
-            var timeStep = (simulationFrameRate > 0) ?
+            var timeStep = (simulationFrameRate > 0) ? 
                 (1f / simulationFrameRate) :
                 Time.deltaTime;
 
@@ -157,7 +158,7 @@ namespace UTJ
                         var sumOfForces = GetSumOfForcesOnBone(springBone);
                         springBone.UpdateSpring(timeStep, sumOfForces);
                         springBone.SatisfyConstraintsAndComputeRotation(
-                            timeStep, boneIsAnimatedStates[boneIndex] ? dynamicRatio : 1f);
+                            timeStep, boneIsAnimatedStates[boneIndex] ? dynamicRatio : 1f, dynamicAdditiveMode);
                     }
                     else
                     {

@@ -96,7 +96,7 @@ namespace UTJ
                     FilterBoneRecordsByRequiredBonesAndCreateUnrecordedBones(springBoneRoot, requiredBones);
                 }
 
-                var initialTransforms = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<Transform>(springBoneRoot, true);
+                var initialTransforms = GameObjectUtil.BuildNameToComponentMap<Transform>(springBoneRoot, true);
                 foreach (var record in pivotRecords)
                 {
                     BuildPivotFromSerializer(initialTransforms, record);
@@ -133,7 +133,7 @@ namespace UTJ
 
                 var bonesWithoutRecords = requiredBones
                     .Except(recordedBoneNames)
-                    .Select(boneName => GameObjectExtensions.GameObjectUtil.FindChildByName(springBoneRoot, boneName))
+                    .Select(boneName => GameObjectUtil.FindChildByName(springBoneRoot, boneName))
                     .Where(item => item != null)
                     .Select(item => item.gameObject);
                 foreach (var bone in bonesWithoutRecords)
@@ -168,6 +168,7 @@ namespace UTJ
                     automaticUpdates = sourceManager.automaticUpdates,
                     simulationFrameRate = sourceManager.simulationFrameRate,
                     dynamicRatio = sourceManager.dynamicRatio,
+                    dynamicAdditiveMode = sourceManager.dynamicAdditiveMode,
                     gravity = sourceManager.gravity,
                     collideWithGround = sourceManager.collideWithGround,
                     groundHeight = sourceManager.groundHeight,
@@ -182,6 +183,7 @@ namespace UTJ
                 targetManager.automaticUpdates = automaticUpdates;
                 targetManager.simulationFrameRate = simulationFrameRate;
                 targetManager.dynamicRatio = dynamicRatio;
+                targetManager.dynamicAdditiveMode = dynamicAdditiveMode;
                 targetManager.gravity = gravity;
                 targetManager.collideWithGround = collideWithGround;
                 targetManager.groundHeight = groundHeight;
@@ -192,6 +194,7 @@ namespace UTJ
             private bool automaticUpdates;
             private int simulationFrameRate;
             private float dynamicRatio;
+            private bool dynamicAdditiveMode;
             private Vector3 gravity;
             private bool collideWithGround;
             private float groundHeight;
@@ -210,10 +213,10 @@ namespace UTJ
             {
                 return new SpringBoneSetupMaps
                 {
-                    allChildren = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<Transform>(springBoneRoot, true),
-                    sphereColliders = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<SpringSphereCollider>(colliderRoot, true),
-                    capsuleColliders = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<SpringCapsuleCollider>(colliderRoot, true),
-                    panelColliders = GameObjectExtensions.GameObjectUtil.BuildNameToComponentMap<SpringPanelCollider>(colliderRoot, true),
+                    allChildren = GameObjectUtil.BuildNameToComponentMap<Transform>(springBoneRoot, true),
+                    sphereColliders = GameObjectUtil.BuildNameToComponentMap<SpringSphereCollider>(colliderRoot, true),
+                    capsuleColliders = GameObjectUtil.BuildNameToComponentMap<SpringCapsuleCollider>(colliderRoot, true),
+                    panelColliders = GameObjectUtil.BuildNameToComponentMap<SpringPanelCollider>(colliderRoot, true),
                 };
             }
         }
@@ -533,7 +536,7 @@ namespace UTJ
             }
             else
             {
-                var skinBones = GameObjectExtensions.GameObjectUtil.GetAllBones(springBone.transform.root.gameObject);
+                var skinBones = GameObjectUtil.GetAllBones(springBone.transform.root.gameObject);
                 if (pivotNode.GetComponent<SpringBonePivot>()
                     && SpringBoneSetup.IsPivotProbablySafeToDestroy(pivotNode, skinBones))
                 {
